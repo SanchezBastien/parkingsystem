@@ -14,6 +14,11 @@ public class FareCalculatorService {
         long outTimeMillis = ticket.getOutTime().getTime();
         double duration = (outTimeMillis - inTimeMillis) / (1000.0 * 60 * 60);
 
+        if (duration <= 0.5) {
+            ticket.setPrice(0); // Gratuit si durée ≤ 30 minutes
+            return;
+        }
+
         //calcul le prix du stationnement (type vehicule + durée)
         switch (ticket.getParkingSpot().getParkingType()){  //verification type vehicule
             case CAR: {
