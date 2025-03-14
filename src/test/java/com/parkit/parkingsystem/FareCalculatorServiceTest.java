@@ -123,10 +123,10 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket);
         assertEquals( (24 * Fare.CAR_RATE_PER_HOUR) , ticket.getPrice());
     }
-    @Test
+    @Test //Indique que cette méthode est un test unitaire.
     public void calculateFareCarWithLessThan30MinutesParkingTime(){
-        Date inTime = new Date();
-        inTime.setTime(System.currentTimeMillis() - (25 * 60 * 1000)); // 25 minutes
+        Date inTime = new Date(); //Création d’un objet Date qui représente l’heure d’entrée.
+        inTime.setTime(System.currentTimeMillis() - (25 * 60 * 1000)); // 25 minutes ; donne l'heure actuelle en millisecondes
         Date outTime = new Date();
         ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
 
@@ -151,5 +151,39 @@ public class FareCalculatorServiceTest {
         fareCalculatorService.calculateFare(ticket);
 
         assertEquals(0, ticket.getPrice()); // Gratuit
+    }
+    @Test
+    public void calculateFareCarWithDiscount() {
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000)); // 1h de stationnement
+        Date outTime = new Date();
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.CAR, false);
+        Ticket ticket = new Ticket();
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+
+        fareCalculatorService.calculateFare(ticket, true); // Avec réduction
+
+        double expectedFare = Fare.CAR_RATE_PER_HOUR * 0.95; // 95% du tarif
+        assertEquals(expectedFare, ticket.getPrice());
+    }
+    @Test
+    public void calculateFareBikeWithDiscount() {
+        Date inTime = new Date();
+        inTime.setTime(System.currentTimeMillis() - (60 * 60 * 1000)); // 1h de stationnement
+        Date outTime = new Date();
+
+        ParkingSpot parkingSpot = new ParkingSpot(1, ParkingType.BIKE, false);
+        Ticket ticket = new Ticket();
+        ticket.setInTime(inTime);
+        ticket.setOutTime(outTime);
+        ticket.setParkingSpot(parkingSpot);
+
+        fareCalculatorService.calculateFare(ticket, true); // Avec réduction
+
+        double expectedFare = Fare.BIKE_RATE_PER_HOUR * 0.95; // 95% du tarif
+        assertEquals(expectedFare, ticket.getPrice());
     }
 }
