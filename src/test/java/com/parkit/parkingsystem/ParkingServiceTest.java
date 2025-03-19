@@ -131,7 +131,7 @@ public class ParkingServiceTest {
                 "Le type de parking devrait être CAR");
         assertTrue(result.isAvailable(), "La place de parking devrait être disponible");
 
-        // Vérification supplémentaire (optionnelle) :
+        // Vérification supplémentaire :
         // s'assurer que la méthode getNextAvailableSlot a bien été appelée
         verify(parkingSpotDAO, times(1)).getNextAvailableSlot(ParkingType.CAR);
     }

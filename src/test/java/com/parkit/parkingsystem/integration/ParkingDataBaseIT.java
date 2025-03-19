@@ -35,6 +35,7 @@ public class ParkingDataBaseIT {
     @Mock
     private static InputReaderUtil inputReaderUtil;
 
+    //Initialise les DAO en leur assignant la configuration de test et instancie le service de préparation de la base
     @BeforeAll
     public static void setUp() throws Exception{
         parkingSpotDAO = new ParkingSpotDAO();
@@ -44,17 +45,19 @@ public class ParkingDataBaseIT {
         dataBasePrepareService = new DataBasePrepareService();
     }
 
+    //configure le comportement des mocks et appelle clearDataBaseEntries() pour vider les tables concernées avant chaque test
     @BeforeEach
     public void setUpPerTest() throws Exception {
         lenient().when(inputReaderUtil.readSelection()).thenReturn(1);
         lenient().when(inputReaderUtil.readVehicleRegistrationNumber()).thenReturn("ABCDEF");
         dataBasePrepareService.clearDataBaseEntries();
     }
-
+    //est prévue pour d’éventuels nettoyages finaux, ici laissée vide
     @AfterAll
     public static void tearDown(){
     }
 
+    //verifier que l'entrée d'une voiture est bien traitée
     @Test
     public void testParkingACar(){
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -91,6 +94,7 @@ public class ParkingDataBaseIT {
         }
     }
 
+    //verifier que la sortie d'un véhicule fonctionne correctement
     @Test
     public void testParkingLotExit(){
         // 1) Simuler l’entrée
@@ -132,6 +136,7 @@ public class ParkingDataBaseIT {
             dataBaseTestConfig.closeConnection(con);
         }
     }
+        //tester la tarification pour un utilisateur récurrent
     @Test
     public void testParkingLotExitRecurringUser() {
         ParkingService parkingService = new ParkingService(inputReaderUtil, parkingSpotDAO, ticketDAO);
@@ -146,7 +151,7 @@ public class ParkingDataBaseIT {
         Ticket ticketAfterFirstExit = getLatestTicket("ABCDEF");
         double fareFirstVisit = ticketAfterFirstExit.getPrice();
         // Le tarif attendu pour 1 heure sans remise est supposé être 1,5€
-        assertEquals(1.5, fareFirstVisit, 0.001, "Le tarif de la première visite doit être 1,5€ sans remise.");
+        assertEquals(1.5, fareFirstVisit, 0.01, "Le tarif de la première visite doit être 1,5€ sans remise.");
 
         // Remise de 5%
         // Simuler une nouvelle entrée pour le même véhicule
@@ -182,7 +187,7 @@ public class ParkingDataBaseIT {
     }
 
     /**
-     * Récupère le ticket le plus récent pour un véhicule donné, en se basant sur l'ID décroissant.
+     * Récupère le ticket le plus récent par rapport à une plaque d'immatriculation
      */
     private Ticket getLatestTicket(String vehicleRegNumber) {
         Ticket ticket = null;

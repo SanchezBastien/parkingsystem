@@ -45,7 +45,7 @@ public class ParkingService {
                 ticketDAO.saveTicket(ticket);
 
                 int nbTickets = ticketDAO.getNbTicket(vehicleRegNumber);
-                if (nbTickets > 0) {
+                if (nbTickets > 1) {
                     System.out.println("Heureux de vous revoir ! Vous bénéficiez d'une réduction de 5%.");
                 }
 
